@@ -1,0 +1,26 @@
+{
+  "name": "ho-so-su-viet-harness",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Harness sản xuất phim tài liệu ngắn Hồ Sơ Sử Việt",
+  "bin": { "hs": "cli/hs.mjs" },
+  "scripts": {
+    "hs": "node cli/hs.mjs",
+    "studio": "remotion studio remotion/index.ts"
+  },
+  "dependencies": {
+    "@remotion/cli": "4.0.535",
+    "@remotion/media": "4.0.535",
+    "ffmpeg-static": "5.2.0",
+    "ffprobe-static": "3.1.0",
+    "react": "19.2.3",
+    "react-dom": "19.2.3",
+    "remotion": "4.0.535",
+    "yaml": "2.8.1"
+  },
+  "devDependencies": {
+    "@types/react": "19.2.7",
+    "typescript": "5.9.3"
+  }
+}

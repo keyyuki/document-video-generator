@@ -1,0 +1,59 @@
+# yaml-language-server: $schema=../../harness/schema/episode.schema.json
+# Kịch bản tập __TITLE__. Đây là nguồn duy nhất: lời đọc, quãng nghỉ, tiếng động và cảnh đều nằm ở đây.
+#
+# Mỗi đoạn (segment) = 2–3 câu, được lồng tiếng thành một file riêng (sửa câu nào, chỉ đọc lại đoạn đó).
+#   text:  lời hiển thị/đọc. Số, ngày tháng, chữ cái A/B/C được tự đổi thành chữ khi lồng tiếng (config/phat-am.yaml).
+#   voice: (tùy chọn) cách đọc riêng nếu khác text, ví dụ để sửa phát âm một tên riêng.
+#   pause: giây im lặng sau đoạn (mặc định 0,5). Dùng 1–2 giây ở các câu cần người xem ngẫm.
+#   sfx:   tiếng động: thunder | boom | stamp | bell | whoosh (hoặc file trong library/sfx/).
+#          Vị trí: cue "cụm từ trong lời đọc" | at <giây từ đầu đoạn> | cue "@pause" (đầu quãng nghỉ), cộng offset.
+#
+# Cảnh (shots) trong đoạn:
+#   type:   image (mặc định) | clip | card (thẻ chữ, không cần hình)
+#   Cảnh đầu tiên bắt đầu cùng đoạn; cảnh sau cần cue hoặc at (cách ghi như sfx).
+#   Nguồn hình, chọn một:
+#     prompt:  mô tả cảnh bằng tiếng Anh → hs assets xuất lệnh tạo ảnh/clip
+#     library: id trong library/index.yaml (dùng lại, không tốn credit)
+#     asset:   đường dẫn có sẵn trong assets/, vd img/s01-1.jpg (dùng lại hình của cảnh khác)
+#   chars:  [nguyen-trai, ...] nhân vật trong series.yaml để giữ đúng mặt
+#   motion: zoomIn | zoomOut | panLeft | panRight | panUp | panDown | still
+#   overlay: chữ trên hình
+#     { kind: stamp, title, subtitle?, at?, color? }   { kind: caption, text }
+#     { kind: center, title, subtitle? }                { kind: lowerThird, label, text, duration? }
+#     { kind: list, title, items: [...] }               { kind: endCard, title, subtitle?, label? }
+#   fx: hiệu ứng vẽ bằng code { rain: 1, fire: [{x: 55, y: 34, radius: 14}], embers: true, grain: 0.07 }
+#   Riêng clip: clipSeconds (3 hoặc 5), startFrom: <id cảnh ảnh làm khung đầu>, trimBefore (giây),
+#               playbackRate, fit: true (tự làm chậm để lấp đầy cảnh)
+
+id: __ID__
+title: __TITLE__
+# music: library/music/ten-file.mp3   # nhạc nền riêng cho tập (tùy chọn)
+
+segments:
+  - id: s01
+    text: >-
+      Câu mở đầu gây tò mò. Câu thứ hai đẩy kịch tính.
+    pause: 1.0
+    sfx:
+      - { name: thunder, at: 0.2 }
+    shots:
+      - prompt: "Wide establishing shot of ... at night, torchlight"
+        motion: zoomIn
+      - cue: "Câu thứ hai"
+        prompt: "Close-up of ..."
+        motion: panRight
+
+  - id: s02
+    text: >-
+      Câu hỏi trung tâm của tập?
+    pause: 2.0
+    sfx:
+      - { name: stamp, cue: "@pause", offset: 0.25 }
+    shots:
+      - library: bang-ho-so
+        motion: panLeft
+      - cue: "@pause"
+        type: clip
+        library: dau-dong-ho-so
+        trimBefore: 1.6
+        overlay: { kind: stamp, title: "HỒ SƠ SỐ 0X", subtitle: "TÊN VỤ ÁN" }

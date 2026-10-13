@@ -1,0 +1,50 @@
+# Thư viện hình dùng lại giữa các tập (không tốn credit).
+# Dùng trong kịch bản: shots: - library: <id>
+# Thêm mục mới: chép file vào library/shots/img|clip rồi khai báo ở đây. Ghi rõ tags để Claude tìm được.
+items:
+  - id: duoc-cot-son-mua
+    type: image
+    file: shots/img/duoc-cot-son-mua.jpg
+    tags: [đuốc, cột son, mưa, đêm, cung điện]
+    note: "Ngọn đuốc trên cột son trong đêm mưa. Hợp fx { rain: 1.2, fire: [{x: 55, y: 36, radius: 16}], embers: true }."
+  - id: bang-ho-so
+    type: image
+    file: shots/img/bang-ho-so.jpg
+    tags: [hồ sơ, bảng điều tra, chỉ đỏ, mở đầu]
+    note: "Bảng hồ sơ điều tra ghim giấy và chỉ đỏ — dùng cho câu hỏi trung tâm mỗi tập."
+  - id: dau-dong-ho-so
+    type: clip
+    file: shots/clip/dau-dong-ho-so.mp4
+    seconds: 5.03
+    tags: [con dấu, đóng dấu, tiêu đề tập]
+    note: "Con dấu đóng xuống hồ sơ. Dùng trimBefore 1.6 + overlay stamp \"HỒ SƠ SỐ 0X\"."
+  - id: trang-su-co
+    type: image
+    file: shots/img/trang-su-co.jpg
+    tags: [sử sách, chữ Hán, nguồn sử liệu, toàn thư]
+    note: "Trang sử cổ chữ Hán — khi trích nguồn sử liệu."
+  - id: ba-la-bai
+    type: image
+    file: shots/img/ba-la-bai.jpg
+    tags: [giả thuyết, ba lá bài, A B C]
+    note: "Ba lá bài úp — mở phần giả thuyết, kèm overlay center \"A · B · C\"."
+  - id: ba-la-bai-nen-tan
+    type: image
+    file: shots/img/ba-la-bai-nen-tan.jpg
+    tags: [giả thuyết, tóm tắt, nến]
+    note: "Ba lá bài bên nến tàn — nền cho overlay list tóm tắt giả thuyết."
+  - id: ho-so-cho-dau
+    type: image
+    file: shots/img/ho-so-cho-dau.jpg
+    tags: [hồ sơ, kết luận, phán quyết]
+    note: "Hồ sơ chờ đóng dấu — kèm stamp \"CHƯA KHÉP LẠI\" hoặc \"ĐÃ KHÉP LẠI\"."
+  - id: quan-lai-thi-tham
+    type: image
+    file: shots/img/quan-lai-thi-tham.jpg
+    tags: [triều đình, quan lại, âm mưu, phe cánh]
+    note: "Quan lại thì thầm sau cột — âm mưu triều đình (trang phục Lê sơ)."
+  - id: chieu-chi-an-son
+    type: image
+    file: shots/img/chieu-chi-an-son.jpg
+    tags: [chiếu chỉ, ấn son, bản án, triều đình]
+    note: "Chiếu chỉ đóng ấn son."

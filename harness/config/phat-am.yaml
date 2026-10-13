@@ -1,0 +1,22 @@
+# Từ điển đọc cho lồng tiếng. `hs voice` áp dụng theo thứ tự:
+# 1) replace: thay cụm từ (không phân biệt hoa thường)  2) đọc số thành chữ  3) letters: chữ cái đứng riêng.
+# Thêm vào đây mỗi khi nghe thấy máy đọc sai.
+
+replace:
+  "TP.": "thành phố"
+  "TK": "thế kỷ"
+  "v.v.": "vân vân"
+  "%": " phần trăm"
+
+# Chữ cái đứng riêng (vd "Giả thuyết B") đọc theo kiểu Việt.
+letters:
+  A: A
+  B: Bê
+  C: Xê
+  D: Dê
+  E: E
+
+# Số: "1442" → "một nghìn bốn trăm bốn mươi hai". Ngày "4/8" → "mùng bốn tháng tám".
+numbers:
+  enabled: true
+  dates: true

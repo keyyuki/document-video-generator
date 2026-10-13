@@ -1,0 +1,73 @@
+# Bộ nhận diện của series "Hồ Sơ Sử Việt".
+# Mọi tập dùng chung các giá trị này; tập nào muốn khác thì ghi đè trong episode.yaml.
+
+name: Hồ Sơ Sử Việt
+language: vi
+
+video:
+  width: 1920
+  height: 1080
+  fps: 30
+  crossfade: 0.3        # giây chuyển cảnh mờ
+  minShot: 1.2          # cảnh ngắn hơn mức này sẽ bị cảnh báo khi qc
+
+audio:
+  sampleRate: 48000
+  loudness: -14         # LUFS, chuẩn YouTube
+  headPad: 0.15         # giây im lặng trước mỗi đoạn lồng tiếng
+  defaultPause: 0.5     # giây nghỉ sau mỗi đoạn nếu kịch bản không ghi
+  tail: 1.5             # giây đuôi sau câu cuối
+  bed:                  # nền âm thanh tổng hợp bằng code (đặt 0 để tắt)
+    rain: 0.022
+    drone: 0.2
+    fx: 0.2
+  music: null           # vd "library/music/dark-ambient.mp3" (đường dẫn tính từ thư mục harness)
+  musicVolume: 0.1
+
+# Lồng tiếng: Claude gọi Higgsfield theo các thông số này (skill hs-podcast).
+voice:
+  provider: higgsfield
+  model: text2speech_v2
+  variant: elevenlabs
+  voice_type: preset
+  voice_id: d8ba9f14-8a24-44db-932b-99e16c45bd32   # Cillian – giọng nam trầm
+  costPer1000Chars: 2.1                             # credit (đo thực tế tập 1: 3.500 ký tự ≈ 7,35)
+
+# Tạo hình: Claude gọi Higgsfield theo các thông số này (skill hs-video).
+visual:
+  image:
+    model: seedream_v5_pro
+    resolution: 2k
+    aspect_ratio: "16:9"
+    cost: 2.5
+  clip:
+    model: kling3_0
+    mode: std
+    sound: "off"
+    duration: 3          # clip 3 giây là đủ cho hầu hết cảnh
+    cost: 4.5
+  styleRef: 2048c4f0-e6d8-4925-875d-23d79be2df94    # ảnh phong cách gốc (Higgsfield job id)
+  style: >-
+    Dark cinematic historical painting, digital oil painting with visible textured brushstrokes,
+    painterly not photorealistic, warm amber torchlight and candlelight against deep indigo and teal
+    night shadows, strong chiaroscuro, subtle film grain, muted earthy palette with accents of imperial
+    yellow and blood red, atmospheric haze, 15th-century Vietnam (Dai Viet) setting, documentary drama mood.
+  rules:
+    - "No text, no letters, no watermark."
+    - "Costume is Vietnamese Dai Viet (cross-collar robes), not Chinese, not Japanese."
+    - "Do not paint rain, fire sparks or smoke when the shot has fx (they are added by code)."
+    - "Leave calm negative space where the shot has an overlay title."
+
+# Nhân vật dùng lại giữa các tập (Higgsfield job id của ảnh tham chiếu).
+characters:
+  nguyen-trai:   { ref: 909585ec-bea5-4b28-bdc9-b9a1365189f5, note: "lão nho sĩ ~62 tuổi, râu trắng, áo giao lĩnh xanh đen, khăn đen" }
+  nguyen-thi-lo: { ref: ecad5453-c416-4d1c-a222-d561695ec99d, note: "nữ học sĩ ~30 tuổi, áo xanh ngọc, búi tóc thấp, trâm ngọc" }
+  le-thai-tong:  { ref: 40b7f946-9cc7-4709-b025-c2fdcfd77511, note: "vua trẻ ~20 tuổi, long bào vàng, mũ cánh chuồn đen" }
+  nguyen-thi-anh: { ref: abe8f1fc-c834-45c8-bcda-425e9dd76523, note: "phi tần ~25 tuổi, áo gấm đỏ thẫm, trâm phượng vàng" }
+  ngo-thi-ngoc-dao: { ref: 17f0efc9-582d-4f20-9c1d-d6c04564e2a1, note: "phi tần trẻ ~20 tuổi, áo ngà và xanh nhạt, trâm bạc" }
+
+brand:
+  font: Lora
+  gold: "#c9a24a"
+  paper: "#f4e6c8"
+  red: "#b3261e"

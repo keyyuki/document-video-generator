@@ -1,0 +1,89 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Kịch bản một tập Hồ Sơ Sử Việt",
+  "type": "object",
+  "required": ["id", "segments"],
+  "$defs": {
+    "position": {
+      "properties": {
+        "cue": { "type": "string", "description": "Cụm từ trong lời đọc (bắt đầu tại đó) hoặc \"@pause\" (đầu quãng nghỉ)" },
+        "at": { "type": "number", "description": "Giây tính từ lúc bắt đầu nói đoạn này" },
+        "offset": { "type": "number", "description": "Cộng thêm (giây, có thể âm)" }
+      }
+    },
+    "overlay": {
+      "type": "object",
+      "required": ["kind"],
+      "properties": {
+        "kind": { "enum": ["stamp", "caption", "center", "lowerThird", "list", "endCard"] },
+        "title": { "type": "string" },
+        "subtitle": { "type": "string" },
+        "text": { "type": "string" },
+        "label": { "type": "string" },
+        "items": { "type": "array", "items": { "type": "string" } },
+        "at": { "type": "number" },
+        "duration": { "type": "number" },
+        "color": { "type": "string" }
+      }
+    },
+    "fx": {
+      "type": "object",
+      "properties": {
+        "rain": { "type": "number", "minimum": 0, "maximum": 3 },
+        "rainAngle": { "type": "number" },
+        "fire": { "type": "array", "items": { "type": "object", "required": ["x", "y"], "properties": { "x": { "type": "number" }, "y": { "type": "number" }, "radius": { "type": "number" } } } },
+        "embers": { "type": "boolean" },
+        "grain": { "type": "number", "minimum": 0, "maximum": 0.3 }
+      }
+    },
+    "shot": {
+      "type": "object",
+      "allOf": [{ "$ref": "#/$defs/position" }],
+      "properties": {
+        "id": { "type": "string" },
+        "type": { "enum": ["image", "clip", "card"], "default": "image" },
+        "prompt": { "type": "string" },
+        "library": { "type": "string" },
+        "asset": { "type": "string" },
+        "chars": { "type": "array", "items": { "type": "string" } },
+        "motion": { "enum": ["zoomIn", "zoomOut", "panLeft", "panRight", "panUp", "panDown", "still"] },
+        "overlay": { "$ref": "#/$defs/overlay" },
+        "fx": { "$ref": "#/$defs/fx" },
+        "clipSeconds": { "type": "number" },
+        "startFrom": { "type": "string" },
+        "trimBefore": { "type": "number" },
+        "playbackRate": { "type": "number", "minimum": 0.25, "maximum": 2 },
+        "fit": { "type": "boolean" }
+      }
+    },
+    "sfx": {
+      "type": "object",
+      "required": ["name"],
+      "allOf": [{ "$ref": "#/$defs/position" }],
+      "properties": { "name": { "type": "string" }, "gain": { "type": "number" } }
+    }
+  },
+  "properties": {
+    "id": { "type": "string", "pattern": "^[a-z0-9-]+$" },
+    "title": { "type": "string" },
+    "music": { "type": ["string", "null"] },
+    "musicVolume": { "type": "number" },
+    "overrides": { "type": "object", "description": "Ghi đè config/series.yaml cho riêng tập này" },
+    "segments": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["id", "text"],
+        "properties": {
+          "id": { "type": "string" },
+          "text": { "type": "string" },
+          "voice": { "type": "string" },
+          "pause": { "type": "number", "minimum": 0 },
+          "sfx": { "type": "array", "items": { "$ref": "#/$defs/sfx" } },
+          "shots": { "type": "array", "items": { "$ref": "#/$defs/shot" } }
+        }
+      }
+    }
+  }
+}
