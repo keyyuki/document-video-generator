@@ -29,7 +29,33 @@ export const buildProps = ({ dir, ep, cfg, pron }) => {
       motion: s.motion ?? (s.type === "image" ? "zoomIn" : undefined),
       overlay: s.overlay ?? null,
       fx: s.fx ?? null,
+      focus: s.focus ?? null,
+      focusTo: s.focusTo ?? null,
+      zoom: s.zoom ?? null,
     };
+    if (s.type === "intro") {
+      const m = s.marks;
+      const f = (t) => Math.max(0, Math.round((t - s.start) * fps) + fadeIn);
+      const hasSub = !!s.intro.subtitle;
+      const titleFrom = m.title;
+      const titleTo = Math.max(m.title + 1.1, m.speechEnd + 0.2);
+      const subFrom = titleTo + 0.1;
+      const subTo = subFrom + 0.8;
+      item.intro = {
+        ...s.intro,
+        t: {
+          brand: f(s.start + 0.2),
+          label: f(m.label),
+          titleFrom: f(titleFrom),
+          titleTo: f(titleTo),
+          subFrom: f(subFrom),
+          subTo: f(subTo),
+          stamp: f(m.speechEnd + (s.stampDelay ?? 0.5)),
+        },
+        paper: `assets/${s.intro.paper}`,
+        hasSub,
+      };
+    }
     if (s.type === "clip") {
       const file = assetPath(dir, s.asset);
       const natural = manifest[s.id]?.seconds ?? (fs.existsSync(file) ? duration(file) : null);
@@ -48,7 +74,8 @@ export const buildProps = ({ dir, ep, cfg, pron }) => {
       height: cfg.video.height,
       durationInFrames: total,
       audio: "audio/mix.wav",
-      font: { family: cfg.brand.font, src: "assets/fonts/Lora.ttf" },
+      font: { family: cfg.brand.font },
+      fonts: (cfg.fonts ?? []).map((x) => ({ family: x.family, src: `assets/fonts/${x.file}`, weight: x.weight ?? "400", style: x.style ?? "normal" })),
       brand: cfg.brand,
       scenes: out,
     },

@@ -5,9 +5,9 @@ import crypto from "node:crypto";
 import { normalizeText, plain } from "./normalize.mjs";
 import { readJson } from "./core.mjs";
 
-export const SHOT_TYPES = ["image", "clip", "card"];
-export const MOTIONS = ["zoomIn", "zoomOut", "panLeft", "panRight", "panUp", "panDown", "still"];
-export const OVERLAYS = ["stamp", "caption", "center", "lowerThird", "list", "endCard"];
+export const SHOT_TYPES = ["image", "clip", "card", "intro"];
+export const MOTIONS = ["zoomIn", "zoomOut", "panLeft", "panRight", "panUp", "panDown", "still", "focusIn", "focusOut"];
+export const OVERLAYS = ["stamp", "caption", "center", "lowerThird", "list", "endCard", "quote", "timeline", "route"];
 
 export const hashText = (s) => crypto.createHash("sha1").update(s).digest("hex").slice(0, 12);
 
@@ -64,7 +64,7 @@ export const validate = (ep, pron) => {
           errors.push(`${sw}: cue "${shot.cue}" không có trong lời đọc của đoạn.`);
       }
       if (shot.cue === "@pause" && !(seg.pause > 0)) errors.push(`${sw}: cue "@pause" nhưng đoạn không có quãng nghỉ.`);
-      if (type !== "card" && !shot.asset && !shot.prompt && !shot.library)
+      if (type !== "card" && type !== "intro" && !shot.asset && !shot.prompt && !shot.library)
         warnings.push(`${sw}: chưa có asset, prompt hay library — sẽ không tạo được hình.`);
     }
     for (const [i, fx] of (seg.sfx ?? []).entries()) {
@@ -99,7 +99,12 @@ export const buildTimeline = (ep, timings, pron) => {
     if (!t) continue;
     for (const shot of listShots({ segments: [seg] })) {
       const start = shot.index === 0 && shot.cue == null && shot.at == null ? t.start : resolvePos(shot, seg, t, pron);
-      scenes.push({ ...shot, start });
+      const item = { ...shot, start };
+      if (shot.type === "intro") {
+        const at = (c) => resolvePos({ cue: c }, seg, t, pron);
+        item.marks = { label: at(shot.labelCue), title: at(shot.titleCue), speechEnd: t.speechEnd, end: t.end };
+      }
+      scenes.push(item);
     }
   }
   scenes.sort((a, b) => a.start - b.start);
@@ -116,10 +121,14 @@ export const buildSfx = (ep, timings, pron) => {
   for (const seg of ep.segments) {
     const t = byId[seg.id];
     if (!t) continue;
-    for (const fx of seg.sfx ?? []) cues.push({ ...fx, time: Math.max(0, resolvePos(fx, seg, t, pron)), segment: seg.id });
+    for (const fx of seg.sfx ?? []) {
+      const time = Math.max(0, resolvePos(fx, seg, t, pron));
+      const duration = fx.until ? Math.max(0.2, resolvePos(fx.until, seg, t, pron) - time) : fx.duration;
+      cues.push({ ...fx, time, duration, segment: seg.id });
+    }
   }
   return cues.sort((a, b) => a.time - b.time);
 };
 
 export const assetPath = (dir, asset) => path.join(dir, "assets", asset);
-export const hasAsset = (dir, shot) => shot.type === "card" || (shot.asset && fs.existsSync(assetPath(dir, shot.asset)));
+export const hasAsset = (dir, shot) => shot.type === "card" || shot.type === "intro" || (shot.asset && fs.existsSync(assetPath(dir, shot.asset)));

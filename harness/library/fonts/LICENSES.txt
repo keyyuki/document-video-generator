@@ -1,0 +1,2 @@
+Lora, Dancing Script, Xanh Mono: SIL Open Font License 1.1 (miễn phí dùng thương mại, kể cả trong video).
+Nguồn: Google Fonts / Fontsource. Dancing Script và Xanh Mono đã gộp các bộ latin + latin-ext + vietnamese thành một file.

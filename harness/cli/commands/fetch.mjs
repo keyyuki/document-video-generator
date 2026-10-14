@@ -32,7 +32,7 @@ export default async ([name], opts) => {
   for (const [id, src] of Object.entries(pairs)) {
     const shot = shots.find((s) => s.id === id);
     if (!shot) fail(`Không có cảnh "${id}" trong kịch bản.`);
-    if (shot.type === "card") fail(`Cảnh ${id} là thẻ chữ, không cần hình.`);
+    if (shot.type === "card" || shot.type === "intro") fail(`Cảnh ${id} là thẻ chữ, không cần hình.`);
     const ext = path.extname(src.split(/[?#]/)[0]) || (shot.type === "clip" ? ".mp4" : ".png");
     const tmp = path.join(tmpDir, `${id}${ext}`);
     await download(src, tmp);

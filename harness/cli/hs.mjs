@@ -7,6 +7,8 @@ Cách dùng: hs <lệnh> <tập> [tùy chọn]
 
   new <tập> [--title "..."]          Tạo thư mục tập mới từ mẫu
   check <tập>                         Kiểm tra kịch bản episode.yaml
+  review <tập> script|voice           Tạo tài liệu để người dùng duyệt (review/kich-ban.md, review/long-tieng.md)
+  approve <tập> [script|voice]        Ghi nhận người dùng đã duyệt (không đối số = xem trạng thái các cổng)
   voice <tập>                         Ghép lồng tiếng + quãng nghỉ → audio/voice.wav, timings.json
         --set s01=<url|file>          Ghi file lồng tiếng của một đoạn (lặp lại được)
         --from <file.json>            Ghi nhiều đoạn một lúc {"s01": "url", ...}
@@ -14,7 +16,8 @@ Cách dùng: hs <lệnh> <tập> [tùy chọn]
   assets <tập>                        Liệt kê cảnh thiếu hình, lấy từ thư viện, xuất assets/todo.json
   fetch <tập> --set <cảnh>=<url|file> Tải hình/clip về đúng chỗ và chuẩn hóa (hoặc --from file.json)
   qc <tập>                            Kiểm tra toàn bộ trước khi xuất
-  render <tập> [--preview] [--stills 5,16.1]   Xuất video (hoặc ảnh từng khung để xem nhanh)
+  render <tập> [--preview] [--stills 5,16.1] [--range 0-40]   Xuất video (hoặc ảnh từng khung / một đoạn để xem nhanh)
+  brand paper                         Dựng lại nền trang giấy dùng cho đoạn mở đầu (library/brand/paper.jpg)
 
 Ví dụ: hs voice ep02 --set s03=https://.../s03.mp3
 `;
@@ -44,6 +47,9 @@ const COMMANDS = {
   fetch: () => import("./commands/fetch.mjs"),
   qc: () => import("./commands/qc.mjs"),
   render: () => import("./commands/render.mjs"),
+  brand: () => import("./commands/brand.mjs"),
+  review: () => import("./commands/review.mjs"),
+  approve: () => import("./commands/approve.mjs"),
 };
 
 const main = async () => {

@@ -3,6 +3,9 @@
   "title": "Kịch bản một tập Hồ Sơ Sử Việt",
   "type": "object",
   "required": ["id", "segments"],
+  "properties": {
+    "intro": { "type": "object", "description": "Đoạn mở đầu thương hiệu (trang giấy, viết tên vụ án, đóng dấu)", "required": ["title"], "properties": { "after": { "type": "string" }, "number": { "type": "integer" }, "title": { "type": "string" }, "subtitle": { "type": "string" }, "meta": { "type": "string" }, "stamp": { "type": "string" }, "enabled": { "type": "boolean" } } }
+  },
   "$defs": {
     "position": {
       "properties": {
@@ -15,12 +18,14 @@
       "type": "object",
       "required": ["kind"],
       "properties": {
-        "kind": { "enum": ["stamp", "caption", "center", "lowerThird", "list", "endCard"] },
+        "kind": { "enum": ["stamp", "caption", "center", "lowerThird", "list", "endCard", "quote", "timeline", "route"] },
+        "source": { "type": "string", "description": "quote: nguồn trích" },
+        "points": { "type": "array", "description": "route: điểm trên bản đồ, x/y là % khung hình", "items": { "type": "object", "required": ["x", "y", "label"], "properties": { "x": { "type": "number" }, "y": { "type": "number" }, "label": { "type": "string" } } } },
         "title": { "type": "string" },
         "subtitle": { "type": "string" },
         "text": { "type": "string" },
         "label": { "type": "string" },
-        "items": { "type": "array", "items": { "type": "string" } },
+        "items": { "type": "array", "description": "list: chuỗi; timeline: {date, text}", "items": { "type": ["string", "object"] } },
         "at": { "type": "number" },
         "duration": { "type": "number" },
         "color": { "type": "string" }
@@ -41,12 +46,15 @@
       "allOf": [{ "$ref": "#/$defs/position" }],
       "properties": {
         "id": { "type": "string" },
-        "type": { "enum": ["image", "clip", "card"], "default": "image" },
+        "type": { "enum": ["image", "clip", "card", "intro"], "default": "image" },
         "prompt": { "type": "string" },
         "library": { "type": "string" },
         "asset": { "type": "string" },
         "chars": { "type": "array", "items": { "type": "string" } },
-        "motion": { "enum": ["zoomIn", "zoomOut", "panLeft", "panRight", "panUp", "panDown", "still"] },
+        "motion": { "enum": ["zoomIn", "zoomOut", "panLeft", "panRight", "panUp", "panDown", "still", "focusIn", "focusOut"] },
+        "focus": { "type": "array", "items": { "type": "number" }, "minItems": 2, "maxItems": 2, "description": "focusIn/focusOut: điểm nhấn [x%, y%]" },
+        "focusTo": { "type": "array", "items": { "type": "number" }, "minItems": 2, "maxItems": 2 },
+        "zoom": { "type": "number", "description": "độ phóng của focusIn/focusOut (mặc định 1,5)" },
         "overlay": { "$ref": "#/$defs/overlay" },
         "fx": { "$ref": "#/$defs/fx" },
         "clipSeconds": { "type": "number" },

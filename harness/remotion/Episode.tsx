@@ -14,24 +14,28 @@ import {
   useVideoConfig,
 } from "remotion";
 import { FxLayer } from "./Fx";
+import { IntroScene } from "./Intro";
 import { OverlayView } from "./Overlays";
-import { Brand, EpisodeProps, Motion, SceneData } from "./types";
+import { Brand, EpisodeProps, FontData, Motion, SceneData } from "./types";
 
-const useFont = (family: string, src: string) => {
-  const [handle] = React.useState(() => delayRender(`Nạp font ${family}`));
+const useFonts = (fonts: FontData[]) => {
+  const [handle] = React.useState(() => delayRender("Nạp font"));
   React.useEffect(() => {
-    const face = new FontFace(family, `url(${staticFile(src)}) format("truetype")`, { weight: "400 700" });
-    face
-      .load()
-      .then((f) => document.fonts.add(f))
+    Promise.all(
+      fonts.map(async (f) => {
+        const face = new FontFace(f.family, `url(${staticFile(f.src)}) format("truetype")`, { weight: f.weight, style: f.style });
+        document.fonts.add(await face.load());
+      }),
+    )
       .catch((err) => console.error("Không nạp được font", err))
       .finally(() => continueRender(handle));
-  }, [family, src, handle]);
+  }, [fonts, handle]);
 };
 
 const ease = Easing.inOut(Easing.sin);
 
-const motionStyle = (motion: Motion, p: number): React.CSSProperties => {
+type Focus = [number, number];
+const motionStyle = (motion: Motion, p: number, focus: Focus, focusTo: Focus, zoom: number): React.CSSProperties => {
   const v = (a: number, b: number) => a + (b - a) * p;
   switch (motion) {
     case "zoomIn":
@@ -46,29 +50,35 @@ const motionStyle = (motion: Motion, p: number): React.CSSProperties => {
       return { scale: "1.14", translate: `0% ${v(3.5, -3.5)}%` };
     case "panDown":
       return { scale: "1.14", translate: `0% ${v(-3.5, 3.5)}%` };
+    case "focusIn":
+    case "focusOut": {
+      // Zoom vào một điểm nhấn (% khung hình): cùng một ảnh thành nhiều cảnh khác nhau.
+      const [a, b] = motion === "focusIn" ? [1.03, zoom] : [zoom, 1.03];
+      return { scale: String(v(a, b)), transformOrigin: `${v(focus[0], focusTo[0])}% ${v(focus[1], focusTo[1])}%` };
+    }
     default:
       return { scale: String(v(1.03, 1.06)) };
   }
 };
 
-const ImageShot: React.FC<{ src: string; motion: Motion; frames: number }> = ({ src, motion, frames }) => {
+const ImageShot: React.FC<{ scene: SceneData; frames: number }> = ({ scene, frames }) => {
   const frame = useCurrentFrame();
   const p = interpolate(frame, [0, frames], [0, 1], { extrapolateLeft: "clamp", extrapolateRight: "clamp", easing: ease });
+  const focus = (scene.focus ?? [50, 50]) as Focus;
+  const focusTo = (scene.focusTo ?? focus) as Focus;
   return (
     <AbsoluteFill style={{ overflow: "hidden", backgroundColor: "black" }}>
-      <Img src={staticFile(src)} style={{ width: "100%", height: "100%", objectFit: "cover", ...motionStyle(motion, p) }} />
+      <Img
+        src={staticFile(scene.src!)}
+        style={{ width: "100%", height: "100%", objectFit: "cover", ...motionStyle(scene.motion ?? "zoomIn", p, focus, focusTo, scene.zoom ?? 1.5) }}
+      />
     </AbsoluteFill>
   );
 };
 
-// Thẻ chữ không cần hình: nền giấy tối có vân.
+// Thẻ chữ không cần hình: nền tối như bìa hồ sơ cũ.
 const CardShot: React.FC<{ brand: Brand }> = ({ brand }) => (
-  <AbsoluteFill
-    style={{
-      background: `radial-gradient(ellipse at 50% 40%, #2a2118 0%, #120d09 70%, #050403 100%)`,
-      boxShadow: `inset 0 0 0 2px ${brand.gold}22`,
-    }}
-  />
+  <AbsoluteFill style={{ background: "radial-gradient(ellipse at 50% 40%, #2a2118 0%, #120d09 70%, #050403 100%)", boxShadow: `inset 0 0 0 2px ${brand.gold}22` }} />
 );
 
 const SceneView: React.FC<{ scene: SceneData; brand: Brand; font: string }> = ({ scene, brand, font }) => {
@@ -77,10 +87,12 @@ const SceneView: React.FC<{ scene: SceneData; brand: Brand; font: string }> = ({
   const opacity = scene.fadeIn > 0 ? interpolate(frame, [0, scene.fadeIn], [0, 1], { extrapolateRight: "clamp" }) : 1;
   return (
     <AbsoluteFill style={{ opacity }}>
-      {scene.type === "card" || !scene.src ? (
+      {scene.type === "intro" && scene.intro ? (
+        <IntroScene data={scene.intro} brand={brand} frames={frames} />
+      ) : scene.type === "card" || !scene.src ? (
         <CardShot brand={brand} />
       ) : scene.type === "image" ? (
-        <ImageShot src={scene.src} motion={scene.motion ?? "zoomIn"} frames={frames} />
+        <ImageShot scene={scene} frames={frames} />
       ) : (
         <AbsoluteFill style={{ backgroundColor: "black" }}>
           <Video
@@ -102,8 +114,8 @@ const SceneView: React.FC<{ scene: SceneData; brand: Brand; font: string }> = ({
   );
 };
 
-export const Episode: React.FC<EpisodeProps> = ({ scenes, audio, font, brand }) => {
-  useFont(font.family, font.src);
+export const Episode: React.FC<EpisodeProps> = ({ scenes, audio, font, fonts, brand }) => {
+  useFonts(fonts);
   const frame = useCurrentFrame();
   const { fps, durationInFrames } = useVideoConfig();
   return (

@@ -68,6 +68,27 @@ characters:
 
 brand:
   font: Lora
+  hand: Dancing Script   # chữ viết tay (tên vụ án trong đoạn mở đầu)
+  mono: Xanh Mono        # chữ máy đánh chữ (số hồ sơ)
   gold: "#c9a24a"
   paper: "#f4e6c8"
   red: "#b3261e"
+
+# Font nạp vào video (file nằm trong library/fonts/, tự chép vào thư mục tập khi render).
+fonts:
+  - { family: Lora, file: Lora.ttf, weight: "400 700", style: normal }
+  - { family: Lora, file: Lora-Italic.ttf, weight: "400 700", style: italic }
+  - { family: Dancing Script, file: DancingScript-Bold.ttf, weight: "700", style: normal }
+  - { family: Xanh Mono, file: XanhMono.ttf, weight: "400", style: normal }
+
+# Đoạn mở đầu thương hiệu: trang giấy hồ sơ, tên vụ án được viết dần rồi đóng dấu.
+# Bật trong episode.yaml bằng khối `intro:` (xem templates/episode.yaml). Lời thoại do giọng đọc chính nói.
+intro:
+  say: "Chào mừng bạn đã đến với Hồ Sơ Sử Việt. Hồ sơ thứ {thứ}: {title}."
+  ordinals: { 1: nhất, 2: hai, 3: ba, 4: tư, 5: năm, 6: sáu, 7: bảy, 8: tám, 9: chín, 10: mười }
+  label: HỒ SƠ SỐ
+  brandLine: HỒ SƠ SỬ VIỆT
+  stamp: ĐANG ĐIỀU TRA
+  pause: 2.0            # giây im lặng sau lời thoại (để viết phụ đề và đóng dấu)
+  stampDelay: 1.15      # đóng dấu sau khi hết lời thoại (có phụ đề); 0,5 giây nếu không có phụ đề
+  paper: brand/paper.jpg   # nền trang giấy (tạo bằng `hs brand paper`, hoặc thay bằng ảnh vẽ riêng)

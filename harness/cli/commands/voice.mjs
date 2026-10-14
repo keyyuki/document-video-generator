@@ -3,6 +3,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { remove, parsePairsWithInbox, loadEpisode, readJson, writeJson, parsePairs, download, ffmpeg, duration, fail, ensureDir, rel, fmtTime } from "../lib/core.mjs";
 import { validate, spokenText, hashText } from "../lib/episode.mjs";
+import { blocked } from "../lib/gate.mjs";
 
 export default async ([name], opts) => {
   const { dir, ep, cfg, pron } = loadEpisode(name);
@@ -41,6 +42,7 @@ export default async ([name], opts) => {
   }
   const todoFile = path.join(audioDir, "tts-todo.json");
   if (todo.length) {
+    if (blocked(name, dir, ep, pron, "script", opts)) return 4; // chưa được người dùng duyệt kịch bản
     const chars = todo.reduce((n, t) => n + t.chars, 0);
     writeJson(todoFile, {
       voice: cfg.voice,

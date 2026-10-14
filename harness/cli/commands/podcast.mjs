@@ -39,22 +39,23 @@ export default async ([name]) => {
   const cache = {};
   const used = [];
   for (const cue of cues) {
-    if (!cache[cue.name]) {
+    const key = cue.name === "pen" ? `pen:${(cue.duration ?? 2).toFixed(1)}` : cue.name;
+    if (!cache[key]) {
       const lib = findLibrarySfx(cue.name);
       if (lib) {
         const tmp = path.join(work, `sfx-${cue.name}.wav`);
         ffmpeg(["-i", lib, "-ar", "48000", "-ac", "1", "-c:a", "pcm_s16le", tmp]);
-        cache[cue.name] = { data: readWavMono(tmp), from: rel(HARNESS, lib), lib: true };
+        cache[key] = { data: readWavMono(tmp), from: rel(HARNESS, lib), lib: true };
       } else {
-        const s = synthSfx(cue.name);
+        const s = synthSfx(cue.name, { duration: cue.duration });
         if (!s) fail(`Tiếng động "${cue.name}" không có trong library/sfx và không tổng hợp được (có sẵn: ${SFX_NAMES.join(", ")}).`);
-        cache[cue.name] = { data: s, from: "tổng hợp", lib: false };
+        cache[key] = { data: s, from: "tổng hợp", lib: false };
       }
     }
     // File thật thường to hơn bản tổng hợp → hạ mặc định
-    const base = cache[cue.name].lib ? 0.5 : 1;
-    mixInto(L, R, cache[cue.name].data, cue.time, (cue.gain ?? 1) * base * (bedCfg.fx ?? 0.2));
-    used.push({ name: cue.name, time: +cue.time.toFixed(2), segment: cue.segment, from: cache[cue.name].from });
+    const base = cache[key].lib ? 0.5 : 1;
+    mixInto(L, R, cache[key].data, cue.time, (cue.gain ?? 1) * base * (bedCfg.fx ?? 0.2));
+    used.push({ name: cue.name, time: +cue.time.toFixed(2), segment: cue.segment, from: cache[key].from });
   }
   const bed = path.join(audioDir, "bed.wav");
   writeWav(bed, [L, R]);

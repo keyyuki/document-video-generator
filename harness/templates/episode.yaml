@@ -17,13 +17,25 @@
 #     asset:   đường dẫn có sẵn trong assets/, vd img/s01-1.jpg (dùng lại hình của cảnh khác)
 #   chars:  [nguyen-trai, ...] nhân vật trong series.yaml để giữ đúng mặt
 #   motion: zoomIn | zoomOut | panLeft | panRight | panUp | panDown | still
+#           focusIn | focusOut  + focus: [x%, y%] (+ focusTo, zoom: 1.6) → cắt cận một chi tiết của ảnh có sẵn (dùng lại ảnh không tốn credit)
 #   overlay: chữ trên hình
 #     { kind: stamp, title, subtitle?, at?, color? }   { kind: caption, text }
 #     { kind: center, title, subtitle? }                { kind: lowerThird, label, text, duration? }
 #     { kind: list, title, items: [...] }               { kind: endCard, title, subtitle?, label? }
+#     { kind: quote, text, source? }                    (trích dẫn nguồn, chữ hiện dần)
+#     { kind: timeline, title?, items: [{date, text}] } (mốc thời gian)
+#     { kind: route, title?, points: [{x, y, label}] }  (đường đi trên bản đồ; x,y là % khung hình, đặt trên ảnh bản đồ)
 #   fx: hiệu ứng vẽ bằng code { rain: 1, fire: [{x: 55, y: 34, radius: 14}], embers: true, grain: 0.07 }
 #   Riêng clip: clipSeconds (3 hoặc 5), startFrom: <id cảnh ảnh làm khung đầu>, trimBefore (giây),
 #               playbackRate, fit: true (tự làm chậm để lấp đầy cảnh)
+
+# Đoạn mở đầu thương hiệu dùng lại cho mọi tập (bỏ khối này nếu không cần). Lời thoại: "Chào mừng bạn đã đến với Hồ Sơ Sử Việt. Hồ sơ thứ <số>: <title>."
+# intro:
+#   after: s03            # chèn sau đoạn này (bỏ → chèn ở đầu tập)
+#   number: 1
+#   title: "Tên vụ án"
+#   subtitle: "Câu hỏi của tập?"
+#   meta: "Năm 1442 · Đại Việt"
 
 id: __ID__
 title: __TITLE__

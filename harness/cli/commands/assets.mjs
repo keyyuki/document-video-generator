@@ -4,6 +4,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { HARNESS, remove, loadEpisode, readYaml, readJson, writeJson, fail, ensureDir, rel } from "../lib/core.mjs";
 import { listShots, assetPath, hasAsset } from "../lib/episode.mjs";
+import { blocked } from "../lib/gate.mjs";
 
 export const loadLibrary = () => {
   const f = path.join(HARNESS, "library", "index.yaml");
@@ -32,11 +33,11 @@ const buildPrompt = (cfg, shot) => {
   return { text, refs };
 };
 
-export default async ([name]) => {
-  const { dir, ep, cfg } = loadEpisode(name);
+export default async ([name], opts = {}) => {
+  const { dir, ep, cfg, pron } = loadEpisode(name);
   const lib = loadLibrary();
   const manifest = readJson(path.join(dir, "assets", "manifest.json"), {});
-  const shots = listShots(ep).filter((s) => s.type !== "card");
+  const shots = listShots(ep).filter((s) => s.type !== "card" && s.type !== "intro");
   const todo = [];
   let fromLib = 0;
   for (const shot of shots) {
@@ -77,6 +78,7 @@ export default async ([name]) => {
       });
     }
   }
+  if (todo.some((t) => t.params) && blocked(name, dir, ep, pron, "voice", opts)) return 4; // chưa duyệt lồng tiếng
   const file = path.join(dir, "assets", "todo.json");
   const cost = todo.reduce((n, t) => n + (t.cost ?? 0), 0);
   if (todo.length) writeJson(file, { estimatedCredits: cost, items: todo });

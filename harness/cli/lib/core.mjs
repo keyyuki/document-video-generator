@@ -5,6 +5,7 @@ import { spawnSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
 import { createRequire } from "node:module";
 import YAML from "yaml";
+import { expandIntro } from "./intro.mjs";
 
 const require = createRequire(import.meta.url);
 export const HARNESS = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..", "..");
@@ -51,9 +52,15 @@ export const loadEpisode = (name) => {
   const dir = episodeDir(name);
   const file = path.join(dir, "episode.yaml");
   if (!fs.existsSync(file)) fail(`Thiếu ${file}`);
-  const ep = readYaml(file);
+  const raw = readYaml(file);
   const series = loadSeries();
-  const cfg = deepMerge(series, ep.overrides ?? {});
+  const cfg = deepMerge(series, raw.overrides ?? {});
+  let ep;
+  try {
+    ep = expandIntro(raw, cfg);
+  } catch (e) {
+    fail(e.message);
+  }
   return { dir, file, ep, cfg, pron: loadPronunciation() };
 };
 

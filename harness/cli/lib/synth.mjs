@@ -116,10 +116,42 @@ const SFX = {
     return y;
   },
 };
+// Tiếng bút lướt trên giấy: các nét ngắn nối nhau, độ dài `dur` giây.
+SFX.pen = (seed = 13, dur = 2) => {
+  const n = Math.round(dur * SR);
+  const r = rng(seed);
+  const x = bp(noise(n, seed), 2200, 8500);
+  const e = new Float32Array(n);
+  let i = 0;
+  while (i < n) {
+    const len = Math.round((0.07 + r() * 0.2) * SR);
+    const gap = Math.round((0.015 + r() * 0.05) * SR);
+    const amp = 0.45 + r() * 0.55;
+    for (let k = 0; k < len && i + k < n; k++) e[i + k] = Math.sin((Math.PI * k) / len) ** 0.7 * amp;
+    i += len + gap;
+  }
+  const fade = Math.round(0.08 * SR);
+  for (let k = 0; k < n; k++) x[k] *= e[k] * Math.min(1, k / fade) * Math.min(1, (n - k) / fade) * 3.2;
+  return x;
+};
+// Tiếng giấy sột soạt lúc đặt trang hồ sơ xuống bàn.
+SFX.paper = (seed = 17, dur = 1.3) => {
+  const n = Math.round(dur * SR);
+  const x = bp(noise(n, seed), 1200, 7000);
+  const e = new Float32Array(n);
+  for (let k = 0; k < n; k++) {
+    const t = k / n;
+    e[k] = (0.6 * Math.max(0, Math.sin(Math.PI * t)) ** 1.5 + 0.4 * Math.max(0, Math.sin(Math.PI * t * 3.3 + 0.7)) ** 3) * Math.exp(-t * 1.8);
+  }
+  for (let k = 0; k < n; k++) x[k] *= e[k] * 2.4;
+  return x;
+};
+
 export const SFX_NAMES = Object.keys(SFX);
-export const synthSfx = (name) => {
+export const synthSfx = (name, opts = {}) => {
   const f = SFX[name];
   if (!f) return null;
+  if (name === "pen") return f(13, opts.duration ?? 2);
   return f();
 };
 
